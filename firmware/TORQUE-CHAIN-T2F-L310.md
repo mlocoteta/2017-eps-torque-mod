@@ -74,6 +74,21 @@ Structural/functional equivalents — **not address-portable** (different chip/c
 All table pointers set in **`FUN_000242cc`** (flash tables `0x27200`–`0x29550`, mostly
 256-byte curves). The map/Kp/Kd/gain tables are now resolved to flash; EVIDENCE.
 
+## Speed-scheduled final limiter — `FUN_000238bc`
+
+Downstream of the engage/taper, `0x3FFEC2E` passes one more limiter before the motor:
+- clamp to `±0x3FFED1E` (a dynamic cap), then
+- **low speed** (`0x3FFEC18 < DAT_27024`): clamp to `±DAT_2706C/6E` = **±3840 (±240)** — the
+  second ±3840 pair found in the cal block;
+- **higher speed**: clamp to a **speed-scheduled limit** `FUN_0001ecc8(table 0x28600)[speed] << 7`,
+  with floor/ceiling `DAT_27068/6A`.
+- result → `0x3FFED94`.
+
+So ±240 is enforced in **four** cal sites total (`0x27072/74`, `0x27044/46`, `0x2704C/4E`,
+`0x2706C/6E`), and above a speed threshold a **table (`0x28600`) schedules the LKAS torque
+limit**. Raising LKAS authority means raising all four ±3840 sites AND the `0x28600` speed
+table — on a safety-critical path, behind a flash. The torque-mod lever set is now complete.
+
 ## Motor stage — `FUN_0002395c` (engage / rate-limit / taper)
 
 Consumes the PID output `0x3FFEC2A` and produces the final motor torque `0x3FFEC2E`:
