@@ -144,6 +144,23 @@ torque ceiling. The only values you can modify **live** are RAM (actuator-test o
 which reset every power cycle. The torque-ceiling cals are in **code flash** — reflash-only,
 and a reflash is the sole *permanent* way to change them.
 
+## 7c. Low-speed engage gate (the ~5 km/h / 3 mph cutoff)
+
+`FUN_00025348` (an engage-arbiter trigger) **disengages LKAS when vehicle speed drops below
+`DAT_270ED = 5`** (a `u8` km/h value, compared against speed `0x3FFD63A`), with re-engage
+hysteresis `DAT_270EE = 2`. This is the ~5 km/h (3 mph) cutoff. EVIDENCE.
+
+- **To allow steering to 0 mph:** set **`0x270ED = 0`** (and `0x270EE` to taste). Code-flash
+  cal (same `0x27xxx` block as the torque clamps; single copy — not in the dual bank — but
+  the image/`.rwd` CRC still applies) ⇒ reflash to change.
+- **No low-speed torque taper:** the dynamic clamp table `0x29150` and the speed-schedule
+  table `0x28600` are flat (±3840 = ±240) at all speeds, so full authority is available down
+  to 0 — lowering the gate gives real assist at parking speed, not a trickle.
+- Caveats: the camera/openpilot side typically has its own min-steer-speed too (must command
+  below 5 km/h for anything to happen); other arbiter triggers (driver-override envelope
+  `FUN_00025410`, faults `FUN_0002539c`) still apply but are not speed gates. Steering at
+  0 mph with full authority is a real behavioral change — bench-validate first.
+
 ## 8. Reflash routes
 
 - **CAN: NOT supported** (EVIDENCE: no UDS-over-CAN addressing `0x18DA/0x18DB` in the image;
