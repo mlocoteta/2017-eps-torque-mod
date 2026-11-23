@@ -1,0 +1,8 @@
+accord17_tap v2 -- flashed to the Teensy 4.0 on 2026-11-13
+built by PlatformIO 6.2.0, framework-arduinoteensy 1.157.220801,
+toolchain-gccarmnoneeabi 5.4.1, board teensy40
+firmware.hex sha256 7ffba3192488d13267428a9ac1913ace870460090abf2d9b1015d27542078bb5
+FLASH code 28700 / data 7068 / headers 8260
+RAM1 variables 28352 (includes the 16 KB record ring)
+This hex IS what is on the board. Teensy 4.0 cannot be read back,
+so keep this file and the source beside it.

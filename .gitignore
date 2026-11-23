@@ -1,0 +1,7 @@
+# firmware binaries & Ghidra project (Honda-copyrighted / regenerable) stay out
+*.bin
+*.rwd*
+firmware/ghidra/project/
+*.log
+__pycache__/
+*.pyc

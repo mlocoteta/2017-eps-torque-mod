@@ -1,0 +1,8 @@
+# captured 2026-11-13T00:08:51.871530 from COM5
+# accord17_tap v2 -- PASSIVE TAP, no command synthesis
+# link 9600 8E1 | L=camera->EPS (4B) | E=EPS->camera (5B)
+# cols: t_us,dir,gap_us,span_us,n,b0,b1,b2,b3,b4,overruns,dropped
+# uptime_us=203117994 verbose=0 framesL=0 framesE=0 dropped=0
+205155135,MARK,0,0,1,6D,na,na,na,na,0,0,0
+207199714,MARK,0,0,1,6D,na,na,na,na,0,0,0
+209043467,MARK,0,0,1,6D,na,na,na,na,0,0,0
