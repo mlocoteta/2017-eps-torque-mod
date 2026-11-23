@@ -130,6 +130,20 @@ main code flash and unreachable by any K-line command.
   session** and only apply while connected in that mode.
 - There is **no** no-reflash way — persistent or temporary — to raise the ±240 ceiling.
 
+## 7b. Where each value lives — persistent vs RAM vs flash (EVIDENCE)
+
+| tier | where | how to change | holds | torque-relevant? |
+|---|---|---|---|---|
+| **Code flash** `0x0–0x3BFFF` | internal flash | **reflash only** (boot mode / K-line bootloader) | **all torque cals** — clamps `0x27036–0x27074`, ramp rates `0x27070/71` + `0x29130/40`, maps `0x28600/700/800/B00/C00`/`0x29150/450`, frame masks `0x27000–08`, dual bank `0x2F100`/`0x31F00` | ✅ **yes — the ceiling lives here** |
+| **EEPROM / data-flash** (persistent working set ≈ `0x3FFD8BC–0x3FFDA78` + config flags e.g. direction `0x3FFD886`) | NVM, mirrored to RAM; committed by `FUN_00011ce4` read-verify-write | K-line `0xC2 06 03/08` service write (bounded, gated) | **survives power cycle** — serials (`0x3FFDA58`), sensor-zero / variant-coding | ❌ service/coding only; torque chain reads a couple config flags (direction) but **not** the clamps/gains |
+| **RAM** (control working set `0x3FFEC00–0x3FFED9x`; diag buffers; actuator overrides `0x3FFDCBA–CCA`; session/engage flags; report-select `0x3FFD88C`) | internal RAM | recomputed every tick; actuator overrides live-writable via `0xC2 … A4` **in test mode** | **lost at power-off / reset** — redone every ignition | ❌ live-modifiable (test overrides) but volatile; not the ceiling |
+
+**So, to your question directly:** the only values you can modify **persistently without a
+reflash** are the EEPROM service/coding values (`0x3FFD8BC–0x3FFDA78`) — and none set the
+torque ceiling. The only values you can modify **live** are RAM (actuator-test overrides),
+which reset every power cycle. The torque-ceiling cals are in **code flash** — reflash-only,
+and a reflash is the sole *permanent* way to change them.
+
 ## 8. Reflash routes
 
 - **CAN: NOT supported** (EVIDENCE: no UDS-over-CAN addressing `0x18DA/0x18DB` in the image;

@@ -65,6 +65,27 @@ torque" fields; exact scaling of value1 vs value2 is BELIEF pending bench correl
 ⇒ **The mode bits select how fast assist ramps in/out, not the torque magnitude.** It is an
 engagement-smoothness selector, not a higher-authority mode and not an angle mode.
 
+### What each byte2 control bit actually does (EVIDENCE)
+
+- **bit5 — LKAS active (`ec0e`)**: the real "steer now" enable. In the PID (`FUN_00023b18`)
+  it **selects the forward-gain table** — active → gain table `0x29450`, inactive → `0x28700`
+  — and gates the torque output. This is the bit that turns steering assist on.
+- **bits4:3 — the 2-bit field (`ec09`, = what the fork model called the "LDW"/mode bits)**:
+  an **engagement-state command** from the camera, consumed two ways:
+  - `FUN_000237a0` (ramp): **mode 2** → fast/dynamic ramp rates from cal `0x29130`/`0x29140`;
+    **modes 0/1** → the slow fixed rates `0x27070`(=2)/`0x27071`(=1).
+  - `FUN_000255b8` (engage arbiter): **mode == 1** is one of several OR'd **transition
+    triggers** — i.e. mode 1 forces an engage/disengage transition rather than steady steer.
+  So: **0 = normal steady engagement, 1 = transition/hold request, 2 = fast-ramp engagement.**
+- **bit6 (`byte2 & 0x40`)**: in stock this is the **inverse of LKAS-ON** (a redundant
+  plausibility/HUD bit) — the EPS control path does not read it for steering. BELIEF (matches
+  the fork conformance observation "byte2 bit6 == NOT lkasOn").
+
+None of these change the ±240 clamps — they control **on/off, ramp speed, and engagement
+transitions**, plus which forward-gain *table* is used (both tables still feed the same
+clamps). "LDW" in the fork model = this byte2 engagement field; the EPS treats it as an
+engagement/mode command, not a separate lane-departure actuator.
+
 ## Is there a hidden higher-torque or torque/angle mode? — NO (EVIDENCE)
 
 - **Torque, not angle.** The command is always a torque request (steer field → PID
