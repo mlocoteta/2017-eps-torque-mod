@@ -13,6 +13,10 @@ Firmware binaries are **not** committed here (Honda-copyrighted; kept in the sib
 `accord-firmwares` tree per repo convention). What's here is the analysis, the reproducible
 scripts, and the findings.
 
+> 📄 **Everything in one place: [`firmware/FINDINGS-SUMMARY.md`](firmware/FINDINGS-SUMMARY.md)** —
+> the full consolidation (chip, serial protocol, torque chain + every lever, calibration,
+> K-line diagnostics + persistence, reflash routes, and the bench reflash procedure).
+
 ## How the 2017 differs from the 2020 (the important part)
 
 | | 2020 Accord (TVA) | **2017 Accord (T2F)** |
